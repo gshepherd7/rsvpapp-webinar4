@@ -28,7 +28,7 @@ jobs:
             sudo apt-get install python3.5
             sleep 5
             python -m pip install -r requirements.txt
-
+            sleep 3
       # run tests!
       # this example uses Django's built-in test-runner
       # other common Python testing frameworks include pytest and nose
