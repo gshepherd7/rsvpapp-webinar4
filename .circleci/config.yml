@@ -1,13 +1,19 @@
+# CircleCI version to use
 version: 2
+# jobs:test sets up a test for your application
 jobs:
   test:
+    # machine:image indicates where CircleCI will do the testing
     machine:
       image: circleci/classic:201808-01
       docker_layer_caching: true
     working_directory: ~/repo
-
+          
+    # Steps of the test
     steps:
+      # Checks out the projects source code and copies into the job space
       - checkout
+      # Runs the listed commands install testing dependencies for testing
       - run:
           name: install dependencies
           command: |
@@ -29,25 +35,29 @@ jobs:
       # https://pytest.org
       # https://nose.readthedocs.io
 
+      # Runs the tests to test the application using pytest
       - run:
           name: run tests
           command: |
             python -m pytest tests/test_rsvpapp.py
 
+  # Define the build job
   build:
-
+    # Builds the application in the specified image
     machine:
       image: circleci/classic:201808-01
       docker_layer_caching: true
     working_directory: ~/repo
-
+          
+    # Checks out the code and builds the container image from the repository
     steps:
       - checkout
       - run:
           name: build image
           command: |
             docker build -t $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1 .
-
+ 
+  # Pushes the resultant image to the registry
   push:
     machine:
       image: circleci/classic:201808-01
@@ -62,22 +72,28 @@ jobs:
             echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
             docker push $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1
 
+# Workflows coordinate the jobs defined above in the correct order
 workflows:
   version: 2
   build-deploy:
     jobs:
+      # Executes the test
       - test:
           context: DOCKERHUB
           filters:
             branches:
-              only: dev
+              # only restricts the workflow to trigger only on updates to this branch
+              only: dev  
+      # Executes the build      
       - build:
           context: DOCKERHUB
           requires:
             - test
           filters:
             branches:
+              # Ensures CircleCI builds and tests code from this branch
               only: dev
+      # Pushes the image to the registry
       - push:
           context: DOCKERHUB
           requires:
