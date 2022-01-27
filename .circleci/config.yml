@@ -27,7 +27,6 @@ jobs:
             sleep 5
             sudo rm /var/lib/dpkg/lock
             sudo dpkg --configure -a
-            #sudo apt-get install python3.7
             sleep 5
             python -m pip install -r requirements.txt
             
@@ -58,25 +57,7 @@ jobs:
           name: build image
           command: |
             docker build -t paas-registry:5000/rsvpapp:$CIRCLE_SHA1 .
-            #docker build -t $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1 .
  
-  # Pushes the resultant image to the registry
-#  push:
-#    machine:
-#      image: circleci/classic:201808-01
-#      docker_layer_caching: true
-#    working_directory: ~/repo
-#    steps:
-#      - checkout
-#      - run:
-#          name: Push image
-#          command: |
-#            docker build -t paas-registry:5000/rsvpapp:$CIRCLE_SHA1 .
-#            docker push paas-registry:5000/rsvpapp:$CIRCLE_SHA1
-#            #docker build -t $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1 .
-#            #echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
-#            #docker push $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1
-
 # Workflows coordinate the jobs defined above in the correct order
 workflows:
   version: 2
@@ -98,11 +79,3 @@ workflows:
             branches:
               # Ensures CircleCI builds and tests code from this branch
               only: dev
-      # Pushes the image to the registry
-#      - push:
-#          context: DOCKERHUB
-#          requires:
-#            - build
-#          filters:
-#            branches:
-#              only: dev
