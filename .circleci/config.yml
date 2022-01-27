@@ -72,10 +72,10 @@ jobs:
           name: Push image
           command: |
             docker build -t paas-registry:5000/rsvpapp:$CIRCLE_SHA1 .
-            #docker build -t $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1 .
-            echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
-            #docker push $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1
             docker push paas-registry:5000/rsvpapp:$CIRCLE_SHA1
+            #docker build -t $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1 .
+            #echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+            #docker push $DOCKERHUB_USERNAME/rsvpapp:$CIRCLE_SHA1
 
 # Workflows coordinate the jobs defined above in the correct order
 workflows:
